@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robot Animado Expresivo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .robot-face {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transform: scale(1.2);
+    }
+
+    .eyes {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+
+    .eye {
+      width: 160px;
+      height: 120px;
+      background: linear-gradient(to top, #4afbff, #00b8d4);
+      border-radius: 80px 80px 30px 30px;
+      box-shadow: 0 0 60px #00e5ff;
+      transition: all 0.3s ease-in-out;
+      transform-origin: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pupil {
+      width: 40px;
+      height: 40px;
+      background: #111;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.1s ease-out;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .pupil::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+
+    /* === BOCA TIPO RITMO CARDÍACO === */
+    .mouth-container {
+      width: 200px;
+      height: 60px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .heartbeat-line {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .heartbeat-path {
+      stroke: #00e5ff;
+      stroke-width: 2;
+      fill: none;
+      filter: drop-shadow(0 0 5px #00e5ff);
+      transition: all 0.3s ease;
+      opacity: 0.6;
+    }
+
+    /* === ANIMACIÓN DE HABLAR (ONDAS DINÁMICAS) === */
+    .is-talking .heartbeat-path {
+      stroke-width: 4;
+      filter: drop-shadow(0 0 20px #00e5ff);
+      opacity: 1;
+      animation: wave-motion 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes wave-motion {
+      0% { 
+        d: path("M10,30 L30,30 L40,20 L50,40 L60,25 L70,35 L80,30 L100,30 L110,15 L120,45 L130,20 L140,40 L150,30 L170,30 L190,30");
+      }
+      25% { 
+        d: path("M10,30 L30,30 L40,35 L50,25 L60,40 L70,20 L80,30 L100,30 L110,40 L120,20 L130,35 L140,25 L150,30 L170,30 L190,30");
+      }
+      50% { 
+        d: path("M10,30 L30,30 L40,25 L50,35 L60,20 L70,40 L80,30 L100,30 L110,25 L120,35 L130,40 L140,20 L150,30 L170,30 L190,30");
+      }
+      75% { 
+        d: path("M10,30 L30,30 L40,40 L50,20 L60,35 L70,25 L80,30 L100,30 L110,35 L120,25 L130,15 L140,45 L150,30 L170,30 L190,30");
+      }
+      100% { 
+        d: path("M10,30 L30,30 L40,15 L50,45 L60,30 L70,30 L80,30 L100,30 L110,20 L120,40 L130,25 L140,35 L150,30 L170,30 L190,30");
+      }
+    }
+
+    /* === ANIMACIÓN DE PARPADEO === */
+    .blinking {
+      animation: blink 0.3s ease-in-out;
+    }
+    @keyframes blink {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.1); }
+    }
+
+    /* === EXPRESIÓN DE FELICIDAD (SONRISA) === */
+    .eye.happy {
+      height: 110px;
+      border-radius: 30px 30px 80px 80px;
+      animation: happy-bounce 0.5s ease-in-out;
+    }
+    @keyframes happy-bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* === MUECAS HUMANAS === */
+    .eye.wink {
+      transform: scaleY(0.2) rotate(-5deg);
+    }
+
+    .eye.surprised {
+      width: 180px;
+      height: 140px;
+      border-radius: 50%;
+      animation: surprise-shake 0.3s ease-in-out;
+    }
+    @keyframes surprise-shake {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.1); }
+      75% { transform: scale(0.95); }
+    }
+
+    .eye.sleepy {
+      height: 60px;
+      border-radius: 80px 80px 80px 80px;
+      opacity: 0.7;
+    }
+
+    .mouth-container.smile .heartbeat-path {
+      stroke: #4afbff;
+      transform: translateY(-10px);
+    }
+
+    .mouth-container.frown .heartbeat-path {
+      stroke: #ff6b6b;
+      transform: translateY(10px) scaleY(-1);
+    }
+
+    .mouth-container.oh .heartbeat-path {
+      stroke: #ffd93d;
+      transform: scale(0.5);
+    }
+
+    .speech-bubble {
+      position: absolute;
+      top: 10%;
+      background: #ffffffee;
+      color: #111;
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-size: 18px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+    }
+
+    .speech-bubble.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="robot-face">
+    <div class="eyes">
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+    </div>
+    <div class="mouth-container">
+      <div class="heartbeat-line">
+        <svg width="200" height="60" viewBox="0 0 200 60">
+          <path class="heartbeat-path" d="M10,30 L190,30" />
+        </svg>
+      </div>
+    </div>
+    <div class="speech-bubble" id="speech"></div>
+  </div>
+
+  <script>
+    const speechBubble = document.getElementById('speech');
+    const mouthContainer = document.querySelector('.mouth-container');
+    const eyes = document.querySelectorAll('.eye');
+    const pupils = document.querySelectorAll('.pupil');
+
+    // Frases con emociones
+    const frases = [
+      { text: "¿Cómo estás hoy?", emotion: "neutral" },
+      { text: "Estoy aquí para ayudarte.", emotion: "happy" },
+      { text: "¿Quieres contarme algo?", emotion: "neutral" },
+      { text: "Estoy escuchando...", emotion: "neutral" },
+      { text: "Tu bienestar me importa 🤖", emotion: "happy" },
+      { text: "¡Qué bueno verte!", emotion: "happy" },
+      { text: "Analizando emociones humanas...", emotion: "neutral" }
+    ];
+
+    // Seguimiento del cursor con las pupilas (ambos ojos iguales)
+    document.addEventListener('mousemove', (e) => {
+      const robotRect = document.querySelector('.robot-face').getBoundingClientRect();
+      
+      // Usar el centro de la cara del robot como referencia
+      const robotCenterX = robotRect.left + robotRect.width / 2;
+      const robotCenterY = robotRect.top + robotRect.height / 2;
+      
+      const deltaX = e.clientX - robotCenterX;
+      const deltaY = e.clientY - robotCenterY;
+      
+      // Limitar el movimiento de las pupilas
+      const maxMove = 25;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const limitedDistance = Math.min(distance, maxMove);
+      
+      let moveX = 0;
+      let moveY = 0;
+      
+      if (distance > 0) {
+        moveX = (deltaX / distance) * limitedDistance;
+        moveY = (deltaY / distance) * limitedDistance;
+      }
+      
+      // Aplicar el mismo movimiento a ambas pupilas
+      pupils.forEach((pupil) => {
+        pupil.style.transform = `translate(${-50 + moveX}%, ${-50 + moveY}%)`;
+      });
+    });
+
+    // Lógica para hablar
+    setInterval(() => {
+      const rand = Math.floor(Math.random() * frases.length);
+      const fraseActual = frases[rand];
+
+      speechBubble.innerText = fraseActual.text;
+      speechBubble.classList.add('visible');
+      mouthContainer.classList.add('is-talking');
+
+      if (fraseActual.emotion === 'happy') {
+        eyes.forEach(eye => eye.classList.add('happy'));
+        mouthContainer.classList.add('smile');
+      }
+
+      setTimeout(() => {
+        speechBubble.classList.remove('visible');
+        mouthContainer.classList.remove('is-talking');
+        eyes.forEach(eye => eye.classList.remove('happy'));
+        mouthContainer.classList.remove('smile');
+      }, 4000);
+
+    }, 7000);
+
+    // Muecas humanas cada 5 segundos
+    const expressions = ['wink', 'surprised', 'sleepy'];
+    const mouthExpressions = ['smile', 'frown', 'oh'];
+    
+    setInterval(() => {
+      const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
+      const randomMouthExpression = mouthExpressions[Math.floor(Math.random() * mouthExpressions.length)];
+      
+      // Aplicar expresión a los ojos
+      if (randomExpression === 'wink') {
+        // Solo guiñar un ojo
+        const randomEye = Math.floor(Math.random() * 2);
+        eyes[randomEye].classList.add('wink');
+        setTimeout(() => {
+          eyes[randomEye].classList.remove('wink');
+        }, 800);
+      } else {
+        eyes.forEach(eye => eye.classList.add(randomExpression));
+        setTimeout(() => {
+          eyes.forEach(eye => eye.classList.remove(randomExpression));
+        }, 1200);
+      }
+      
+      // Aplicar expresión a la boca
+      mouthContainer.classList.add(randomMouthExpression);
+      setTimeout(() => {
+        mouthContainer.classList.remove(randomMouthExpression);
+      }, 1200);
+      
+    }, 5000);
+
+    // Parpadeo natural
+    function triggerBlink() {
+      eyes.forEach(eye => eye.classList.add('blinking'));
+      setTimeout(() => {
+        eyes.forEach(eye => eye.classList.remove('blinking'));
+      }, 300);
+      const randomInterval = Math.random() * 5000 + 2000;
+      setTimeout(triggerBlink, randomInterval);
+    }
+    triggerBlink();
+  </script>
+</body>
+</html>
